@@ -7,6 +7,8 @@ We are using the [NIST Randomness Beacon v2](https://csrc.nist.gov/projects/inte
 
 I think its cool that theres something in this world called a beacon.
 
+[heres an article about how they generate these. its quantum oooo fancy](https://www.nist.gov/news-events/news/2025/06/nist-and-partners-use-quantum-mechanics-make-factory-random-numbers)
+
 
 ### The design
 
