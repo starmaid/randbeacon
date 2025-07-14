@@ -32,6 +32,17 @@ class LightStrip():
         pass
 
 
+class PrintTestLightStrip(LightStrip):
+    def setLights(self, light_arr):
+        super().setLights(light_arr)
+        
+
+        # This is apparently the magic to flatten tuples
+        data = [2,5] + list(sum(light_arr,()))
+        print(data)
+        #print(bytes(data))
+        return  
+
 class WledLightStrip(LightStrip):
     def __init__(self, num_leds):
         super().__init__(num_leds)
@@ -49,33 +60,13 @@ class WledLightStrip(LightStrip):
         # This is apparently the magic to flatten tuples
         data = [2,5] + list(sum(light_arr,()))
         self.s.sendto(bytes(data), (self.light_address, self.light_udp_port))
-        return
-
-        
+        return  
     
     def getLightState(self):
         r = requests.get(self.light_address + "/json")
         return(r.content)
     
-    def sendUdp(self):
-        while True:
-            t = int(time.time() * 10000)
-            index = t % 10
-            data = [1,5,index,t%255,int(t/255)%255,int(t/255/255)%255]
-            self.s.sendto(bytes(data), (self.light_address, self.light_udp_port))
-            time.sleep(0.001)
-    
-    def sendUdp2(self):
-        index = 0
-        len = 400
-        while True:
-            data = [2,5] + [0] * 3 * len
-            data[2+index*3:2+index*3+3] = [255,255,255]
-            self.s.sendto(bytes(data), (self.light_address, self.light_udp_port))
-            index += 1
-            if index >= len:
-                index = 0
-            time.sleep(0.001)
+
 
 
 if __name__ == "__main__":

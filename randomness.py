@@ -11,6 +11,12 @@ randomness_str_len = 128
 # force ipv4 because i was having issues
 requests.packages.urllib3.util.connection.HAS_IPV6 = False
 
+def sleepUntilMinute():
+    start_time = time.time()
+    next_minute = (int(time.time()/60) + 1 ) * 60
+    wait_time = next_minute - start_time
+    time.sleep(wait_time)
+
 class randomness():
     def __init__(self):
         self.shr_str = Array('c', randomness_str_len)
@@ -27,7 +33,14 @@ class randomness():
         self.shr_data.command = False
 
     def getPulse(self):
-        return(self.shr_str.value.decode())
+        # return the bytearray of the pulse
+
+        # remember, the beacon gives us a 128-char long string
+        # that is ACTUALLY just writing out 0-F hex as 128 regular characters
+        # so we have to turn it into a 64-bit long bytestring
+        ba = bytearray.fromhex(self.shr_str.value.decode())
+
+        return(ba)
     
 
 class recProcData(Structure):
@@ -50,11 +63,15 @@ class childproc():
             if self.shr_data.command == False:
                 break
             r = requests.get(nist_url, timeout=5)
-            data = json.loads(r.content.decode())
+            try:
+                data = json.loads(r.content.decode())
+            except json.decoder.JSONDecodeError:
+                print(f"json decode error, data was {r.content}")
+                continue
             value = data['pulse']['outputValue']
             self.shr_str.value = bytes(value, 'ascii')
             #print(value)
-            time.sleep(5)
+            sleepUntilMinute()
         
         self.shr.status = False
 
