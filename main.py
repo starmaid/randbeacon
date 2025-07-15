@@ -15,7 +15,7 @@ def multiplyTuple(tup,scalar):
     return(tuple(int(scalar*x) for x in tup))
 
 if __name__ == "__main__":
-    strip_len = 60
+    strip_len = 71
     strip_arr = [(0,0,0)]*strip_len
 
     lights = WledLightStrip(strip_len)

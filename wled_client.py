@@ -35,18 +35,15 @@ class LightStrip():
 class PrintTestLightStrip(LightStrip):
     def setLights(self, light_arr):
         super().setLights(light_arr)
-        
-
         # This is apparently the magic to flatten tuples
-        data = [2,5] + list(sum(light_arr,()))
-        print(data)
-        #print(bytes(data))
+        data = list(sum(light_arr,()))
+        print(data,end='\r')
         return  
 
 class WledLightStrip(LightStrip):
-    def __init__(self, num_leds):
+    def __init__(self, num_leds, ip_addr="192.168.0.20"):
         super().__init__(num_leds)
-        self.light_address = "10.0.0.105"
+        self.light_address = ip_addr
         self.light_baseurl = f"http://{self.light_address}"
         self.light_udp_port = 21324
         self.s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
