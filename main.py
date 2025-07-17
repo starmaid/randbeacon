@@ -3,7 +3,7 @@ import colorsys
 import math
 
 from randomness import randomness, sleepUntilMinute
-from wled_client import WledLightStrip, PrintTestLightStrip
+from lights.lights import WledLightStrip, PrintTestLightStrip
 
 def indexWithWrap():
     pass
