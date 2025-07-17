@@ -18,7 +18,7 @@ if __name__ == "__main__":
     strip_len = 71
     strip_arr = [(0,0,0)]*strip_len
 
-    lights = WledLightStrip(strip_len)
+    lights = WledLightStrip(strip_len, "192.168.1.210")
     #lights = PrintTestLightStrip(strip_len)
     beacon = randomness()
 

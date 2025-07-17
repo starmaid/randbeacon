@@ -17,6 +17,25 @@ def sleepUntilMinute():
     wait_time = next_minute - start_time
     time.sleep(wait_time)
 
+
+
+def session_for_src_addr(addr: str) -> requests.Session:
+    """
+    Create `Session` which will bind to the specified local address
+    rather than auto-selecting it.
+    """
+    session = requests.Session()
+    for prefix in ('http://', 'https://'):
+        session.get_adapter(prefix).init_poolmanager(
+            # those are default values from HTTPAdapter's constructor
+            connections=requests.adapters.DEFAULT_POOLSIZE,
+            maxsize=requests.adapters.DEFAULT_POOLSIZE,
+            # This should be a tuple of (address, port). Port 0 means auto-selection.
+            source_address=(addr, 0),
+        )
+    return session
+
+
 class randomness():
     def __init__(self):
         self.shr_str = Array('c', randomness_str_len)
@@ -58,11 +77,13 @@ class childproc():
     def loop(self):
         # set up values
         self.shr_data.status = True
+        net_session = session_for_src_addr('192.168.0.113')
+
 
         while True:
             if self.shr_data.command == False:
                 break
-            r = requests.get(nist_url, timeout=5)
+            r = net_session.get(nist_url, timeout=5)
             try:
                 data = json.loads(r.content.decode())
             except json.decoder.JSONDecodeError:
