@@ -77,7 +77,7 @@ class childproc():
     def loop(self):
         # set up values
         self.shr_data.status = True
-        net_session = session_for_src_addr('192.168.0.113')
+        net_session = session_for_src_addr('10.194.69.178')
 
 
         while True:
