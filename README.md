@@ -2,7 +2,7 @@
 
 a lights display that reads the values from NIST's Randomness Beacon
 
-![video taken in a field of the light running. take it outside]()
+![video taken in a field of the light running. take it outside](/doc/rand_sky.gif)
 
 We are using the [NIST Randomness Beacon v2](https://csrc.nist.gov/projects/interoperable-randomness-beacons/beacon-20) which generates truly random bitstrings once a minute. 
 
@@ -14,7 +14,7 @@ I think its cool that theres something in this world called a beacon. [Heres an 
 
 ### Usage
 
-
+![light display by poolside](/doc/poolside.jpg)
 
 ### The design
 
