@@ -35,3 +35,10 @@ I think the light should be somewhat dynamic. we could scan through values, and 
 | method | `(isolate >> 1) + 159` | `isolate << 2` | 
 
 
+### Notes: in progress
+
+- [ ] break out configs into a file or env vars
+- [x] make it play on the minute, not just every 60 seconds
+- [x] play more bits of the time, still only 1 second duration
+- [x] give it something to play if it has no internet (red cursor and grey pixels?)
+- [ ] make a docker container for all the lights stuff

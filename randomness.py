@@ -9,15 +9,23 @@ nist_url = "https://beacon.nist.gov/beacon/2.0/pulse/last"
 randomness_str_len = 128
 
 # force ipv4 because i was having issues
-requests.packages.urllib3.util.connection.HAS_IPV6 = False
+#requests.packages.urllib3.util.connection.HAS_IPV6 = False
 
 def sleepUntilMinute():
     start_time = time.time()
     next_minute = (int(time.time()/60) + 1 ) * 60
     wait_time = next_minute - start_time
+    
+    wait_time = max(0, wait_time - 2) # wake up early
     time.sleep(wait_time)
 
-
+def sleepUntilSecond():
+    start_time = time.time()
+    next_second = int(time.time()) + 1
+    wait_time = next_second - start_time
+    
+    wait_time = max(0, wait_time + 0.01) # wake up slightly late to garuntee we are on the next second
+    time.sleep(wait_time)
 
 def session_for_src_addr(addr: str) -> requests.Session:
     """
@@ -37,14 +45,15 @@ def session_for_src_addr(addr: str) -> requests.Session:
 
 
 class randomness():
-    def __init__(self):
+    def __init__(self, network_addr=None):
         self.shr_str = Array('c', randomness_str_len)
         self.shr_data = Value(recProcData)
         self.shr_data.command = True
+        self.network_addr = network_addr
         pass
 
     def startProcess(self):
-        p = childproc(self.shr_data, self.shr_str)
+        p = childproc(self.shr_data, self.shr_str, {"network_addr": self.network_addr})
         self.bgenworkerproc = Process(target=p.loop, args=(), daemon=True)
         self.bgenworkerproc.start()
     
@@ -69,25 +78,39 @@ class recProcData(Structure):
     ]
 
 class childproc():
-    def __init__(self, shr_data, shr_str):
+    def __init__(self, shr_data, shr_str, config):
         self.shr_data = shr_data
         self.shr_str = shr_str
+        self.network_addr = config["network_addr"]
         pass
 
     def loop(self):
         # set up values
         self.shr_data.status = True
-        net_session = session_for_src_addr('10.194.69.178')
+        
+        if self.network_addr is not None:
+            print(f"Using user-specified network interface {self.network_addr}")
+            net_session = session_for_src_addr(self.network_addr)
+        else:
+            net_session = requests.Session() # use default session
 
 
         while True:
             if self.shr_data.command == False:
                 break
-            r = net_session.get(nist_url, timeout=5)
+            try:
+                r = net_session.get(nist_url, timeout=5)
+            except Exception as e:
+                print(f"Couldn't reach NIST: {e}")
+                time.sleep(2)
+                sleepUntilMinute()
+                continue
+                
             try:
                 data = json.loads(r.content.decode())
             except json.decoder.JSONDecodeError:
-                print(f"json decode error, data was {r.content}")
+                print(f"JSON decode error, data was {r.content}")
+                sleepUntilMinute()
                 continue
             value = data['pulse']['outputValue']
             self.shr_str.value = bytes(value, 'ascii')
