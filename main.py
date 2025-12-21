@@ -1,9 +1,17 @@
 import time
 import colorsys
 import math
+import logging
+import json
+from datetime import datetime
 
 from randomness import randomness, sleepUntilMinute, sleepUntilSecond
 from lights.lights import WledLightStrip, PrintTestLightStrip
+
+# set up logging
+logging.getLogger("asyncio").setLevel(logging.WARNING)
+logfilename = str(datetime.now())[0:10] + '.log'
+logging.basicConfig(filename=logfilename, format='%(asctime)s %(levelname)s %(message)s', level=logging.WARNING)
 
 def indexWithWrap():
     pass
@@ -24,9 +32,23 @@ def print_index_with_cursor(strip_arr, index, color, cursor_color, strip_len):
     strip_arr[(index+6)%strip_len] = multiplyTuple(strip_arr[(index+6)%strip_len],0.5)
 
 if __name__ == "__main__":
-    strip_len = 40
-    lights_addr = "192.168.0.118"
-    network_addr = None
+    # Try to load the config file
+    try:
+        with open("./config.json","r") as f:
+            config = json.load(f)
+    except Exception as e:
+        logging.error('Error loading config file: ' + str(e))
+        logging.error('Stopping Program')
+        raise e
+    
+    try:
+        strip_len = config.get("strip_len")
+        lights_addr = config.get("lights_addr")
+        network_addr = config.get("network_addr")
+    except Exception as e:
+        logging.error('Error parsing config file: ' + str(e))
+        logging.error('Stopping Program')
+        raise e
     
     strip_arr = [(0,0,0)]*strip_len
 
@@ -34,8 +56,8 @@ if __name__ == "__main__":
     
     r = lights.getLightState()
     if r is None:
-        print(f"Couldn't reach WLED light strip at {lights_addr}:")
-        print("exiting.")
+        logging.error(f"Couldn't reach WLED light strip at {lights_addr}:")
+        logging.error("exiting.")
         exit(1)
     
     #lights = PrintTestLightStrip(strip_len)

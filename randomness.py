@@ -3,7 +3,9 @@ import json
 import time
 from multiprocessing import Process, Value, Array
 from ctypes import Structure, c_bool
+import logging
 
+logging.getLogger("requests").setLevel(logging.WARNING)
 
 nist_url = "https://beacon.nist.gov/beacon/2.0/pulse/last"
 randomness_str_len = 128
@@ -89,7 +91,7 @@ class childproc():
         self.shr_data.status = True
         
         if self.network_addr is not None:
-            print(f"Using user-specified network interface {self.network_addr}")
+            logging.info(f"Using user-specified network interface {self.network_addr}")
             net_session = session_for_src_addr(self.network_addr)
         else:
             net_session = requests.Session() # use default session
@@ -101,7 +103,7 @@ class childproc():
             try:
                 r = net_session.get(nist_url, timeout=5)
             except Exception as e:
-                print(f"Couldn't reach NIST: {e}")
+                logging.error(f"Couldn't reach NIST: {e}")
                 time.sleep(2)
                 sleepUntilMinute()
                 continue
@@ -109,7 +111,7 @@ class childproc():
             try:
                 data = json.loads(r.content.decode())
             except json.decoder.JSONDecodeError:
-                print(f"JSON decode error, data was {r.content}")
+                logging.error(f"JSON decode error, data was {r.content}")
                 sleepUntilMinute()
                 continue
             value = data['pulse']['outputValue']

@@ -1,0 +1,5 @@
+{
+    "strip_len": 40,
+    "lights_addr": "192.168.0.25",
+    "network_addr": null
+}
