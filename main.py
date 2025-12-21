@@ -9,7 +9,7 @@ from randomness import randomness, sleepUntilMinute, sleepUntilSecond
 from lights.lights import WledLightStrip, PrintTestLightStrip
 
 # set up logging
-logging.getLogger("asyncio").setLevel(logging.WARNING)
+logging.getLogger("asyncio").setLevel(logging.ERROR)
 logfilename = str(datetime.now())[0:10] + '.log'
 logging.basicConfig(filename=logfilename, format='%(asctime)s %(levelname)s %(message)s', level=logging.WARNING)
 
@@ -54,11 +54,14 @@ if __name__ == "__main__":
 
     lights = WledLightStrip(strip_len, lights_addr)
     
-    r = lights.getLightState()
-    if r is None:
-        logging.error(f"Couldn't reach WLED light strip at {lights_addr}:")
-        logging.error("exiting.")
-        exit(1)
+    # loop until we get a connection...
+    while True:
+        r = lights.getLightState()
+        if r is None:
+            logging.error(f"Couldn't reach WLED light strip at {lights_addr}:")
+            time.sleep(10)
+        else:
+            break
     
     #lights = PrintTestLightStrip(strip_len)
     beacon = randomness(network_addr=network_addr)

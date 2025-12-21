@@ -5,7 +5,9 @@ from multiprocessing import Process, Value, Array
 from ctypes import Structure, c_bool
 import logging
 
-logging.getLogger("requests").setLevel(logging.WARNING)
+logging.getLogger("requests").setLevel(logging.ERROR)
+logging.getLogger("urllib3").setLevel(logging.ERROR)
+logging.getLogger('charset_normalizer').setLevel(logging.ERROR)
 
 nist_url = "https://beacon.nist.gov/beacon/2.0/pulse/last"
 randomness_str_len = 128
