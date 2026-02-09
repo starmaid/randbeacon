@@ -74,6 +74,10 @@ if __name__ == "__main__":
     current_index = 0
 
     while True:
+        # first lets get the status to try and jumpstart lost connections
+        if lights.getLightState() is None:
+            logging.warning("Failed to get light state")
+
         # first print the minute really fast
         minute_bitstring = makeBitString(int(time.time()/60))
         
