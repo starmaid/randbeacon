@@ -22,6 +22,8 @@ The randomness beacon is 512 bits long (64 bytes), and a new one is generated ev
 
 To constrain ourselves, we can set boundaries. As this light is meant to be running continuously in a living or working space for humans, drastic brightness changes or strobing patterns should be avoided. Also, the perceptual space of super bright LEDs works best with highly saturated colors, so the whites and greys and muddy colors in the low saturation space can be avoided entirely.
 
+![gif of a circular display on a shelf](/doc/rand_shelf.gif)
+
 I enjoy constant, slow motion on my light art, like a clock. I also want some new animation to show that there is a NEW value from the beacon. But it shouldn't be too distracting, and should play within the visual space of the light while being distinct.
 
 I think the light should be somewhat dynamic. we could scan through values, and i think that could be cool. we have 64 bytes and 60 seconds in a minute. we could display one new value every second. On the minute, we could display a quick sequence of white on-offs for the current time. because seconds wont matter we can divide the unix time by 60 and then cast to 8 bits? and play them really rapidly.
